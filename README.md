@@ -31,6 +31,21 @@ adding a volume, volumeMount and `env` section as demonstrated in
 Then exec into the container using `kubectl exec -it  configmap-demo -- sh` and show the
 mounted config files in `/config` and the `MY_ENV_VAR` environment variable.
 
+## Rolling Upgrade Demo
+
+This Demo shows the rolling upgrade behavior of a deployment.
+
+Before the demo apply the demo-deployment using `kubectl apply -f rolling-upgrade/deployment.yaml`.
+
+To showcase the upgrade behavior, update the deployment, e.g. by running
+`kubectl set image deployment deployment-demo busybox=busybox:latest`.
+Then showcase the state change of the objects in the cluster using
+`watch -n 0.1 kubectl get po,rs -l app=deployment-demo`.
+Alternatively, you can show the events using e.g. `kubectl get events -w`.
+
+There are also two alternative deployment manifests in the [rolling-upgrade folder](rolling-upgrade/)
+for showcasing the behavior when only setting `maxSurge` or `maxUnavailable`.
+
 ## Troubleshooting Demo
 
 This Demo showcases various broken pods/deployments with different

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: deployment-demo
+  name: deployment-demo
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: deployment-demo
+  strategy:
+    rollingUpdate:
+      maxSurge: "0"
+      maxUnavailable: "1"
+  template:
+    metadata:
+      labels:
+        app: deployment-demo
+    spec:
+      containers:
+      - image: busybox
+        name: busybox
+        command:
+        - sh
+        - -c
+        - |
+          sleep 10
+          touch /tmp/healthy
+          sleep 3600
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+          initialDelaySeconds: 5
+          periodSeconds: 5
