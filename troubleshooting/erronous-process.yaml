@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+spec:
+  containers:
+  - args:
+    - /bin/sh
+    - -c
+    - echo 'sleep 5' && sleep 5 && date && echo 'useful error message' && exit 2
+    - --dry-run=client
+    - -o
+    - yaml
+    image: busybox
+    name: busybox

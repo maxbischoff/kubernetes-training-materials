@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hungry
+spec:
+  containers:
+  - args:
+    - bash
+    - -c
+    - sleep infinity
+    image: busybox
+    imagePullPolicy: Always
+    name: hungry
+    resources:
+      requests:
+        cpu: "10"
+        memory: 5Ti
