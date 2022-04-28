@@ -27,7 +27,7 @@ To run the demo, showcase the creation of a config file and the `kubectl create`
 as done in [configmaps/setup.sh](configmaps/setup.sh).
 Then incrementally edit the [base-pod from the volumes demo](volumes/0-volumeless-pod.yaml)
 adding a volume, volumeMount and `env` section as demonstrated in
-[configmaps/configmap-pod.yaml]
+[configmaps/configmap-pod.yaml](configmaps/configmap-pod.yaml)
 Then exec into the container using `kubectl exec -it  configmap-demo -- sh` and show the
 mounted config files in `/config` and the `MY_ENV_VAR` environment variable.
 
