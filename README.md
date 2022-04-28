@@ -46,6 +46,19 @@ Alternatively, you can show the events using e.g. `kubectl get events -w`.
 There are also two alternative deployment manifests in the [rolling-upgrade folder](rolling-upgrade/)
 for showcasing the behavior when only setting `maxSurge` or `maxUnavailable`.
 
+## Headless Service Demo
+
+This demo showcases how a headless Service differs from a normal clusterIp Service.
+
+Apply the manifests in [headless-service/](headless-service/) using
+`kubectl apply -f headless-service`.
+
+Showcase DNS Resolution of the headless service using:
+`kubectl exec -it client -- dig +search nginx-headless`
+Compare this with the output of `kubectl get endpoints nginx-headless`
+and the resolution of the clusterIp Service `kubernetes` using
+`kubectl exec -it client -- dig +search kubernetes`.
+
 ## Troubleshooting Demo
 
 This Demo showcases various broken pods/deployments with different
