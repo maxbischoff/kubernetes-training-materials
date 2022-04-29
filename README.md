@@ -76,5 +76,7 @@ The following table explains what is wrong with them and how to showcase the iss
 | pod/hungry | The pod is stuck in `Pending` state, since its requests of 10 cpu and 5Ti memory don't fit on the lab nodes. | `kubetl describe pod hungry` -> events, resource.requests |
 | pod/nginx | The pod's image `nginx:1.18.7` doesn't exist, causing it to go into `ImagePullBackoff` | `kubectl describe pod nginx` -> events, image |
 | pod/sleeper | The pod's nodeSelector `test=missing` doesn't fit any of the lab nodes, causing it to be stuck in Pending | `kubectl get pod sleeper -o yaml` -> nodeSelector, conditions |
+| pod/root | The container has `runAsNonRoot` set to `true` but the image runs as root. | `kubectl describe pod root` -> events, securityContext |
+| pod/writer | The container has `readOnlyRootFilesystem` set to `true`, but the script attempts to create a file. | `kubectl logs writer` -> error message |
 
 After finishing the demo, reset the state using `./troubleshooting/teardown.sh`.
