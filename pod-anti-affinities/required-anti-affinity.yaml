@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: required-anti-affinity-demo
+  name: required-anti-affinity-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: required-anti-affinity-demo
+  template:
+    metadata:
+      labels:
+        app: required-anti-affinity-demo
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: required-anti-affinity-demo
+            topologyKey: topology.kubernetes.io/region
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - name: http
+          containerPort: 80

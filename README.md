@@ -80,3 +80,26 @@ The following table explains what is wrong with them and how to showcase the iss
 | pod/writer | The container has `readOnlyRootFilesystem` set to `true`, but the script attempts to create a file. | `kubectl logs writer` -> error message |
 
 After finishing the demo, reset the state using `./troubleshooting/teardown.sh`.
+
+## Pod Spread Demo
+
+This demo showcases the behavior of pods with pod anti-affinities.
+
+First, ensure your nodes are labelled with the
+[standard kubernetes topology labels](https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesioregion)
+such that all nodes have the same region but different zones, e.g. by running:
+
+```sh
+kubectl label nodes topology.kubernetes.io/region=europe --all
+for node in $(kubectl get nodes -o name); do kubectl label $node topology.kubernetes.io/zone=zone-$RANDOM; done
+```
+
+Then deploy the deployments in the [pod-anti-affinities folder](pod-anti-affinities/) using `kubectl apply -f pod-anti-affinities/`.
+Finally showcase the created pods using `kubectl get pods` and for pending pods also show the events.
+
+This will show:
+
+* Two pods of the deployment `preferred-anti-affinity-demo` that are successfully scheduled (since the anti-affinity only
+  preferred the pods being placed into different regions & zones
+* Two pods of the deployment `required-anti-affinity-demo` of which one is stuck in pending,
+  since the required antiAffinity would require a node in a different region to exist

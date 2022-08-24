@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: preferred-anti-affinity-demo
+  name: preferred-anti-affinity-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: preferred-anti-affinity-demo
+  template:
+    metadata:
+      labels:
+        app: preferred-anti-affinity-demo
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: preferred-anti-affinity-demo
+              topologyKey: topology.kubernetes.io/region
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: preferred-anti-affinity-demo
+              topologyKey: topology.kubernetes.io/zone
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - name: http
+          containerPort: 80
