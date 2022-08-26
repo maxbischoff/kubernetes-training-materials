@@ -103,3 +103,16 @@ This will show:
   preferred the pods being placed into different regions & zones
 * Two pods of the deployment `required-anti-affinity-demo` of which one is stuck in pending,
   since the required antiAffinity would require a node in a different region to exist
+
+## Showing where the certificate authentication module extracts user-info from
+
+(Only works when authenticating with a client-certificate)
+
+Extract the certificate from your kubeconfig (assumes only one user to exist):
+
+```sh
+kubectl config view -o jsonpath='{.users[0].user.client-certificate-data}' --raw | base64 -d > cert.pem
+```
+
+Then use `openssl x509 -in cert.pem -noout -text | less` to show the certificate data.
+Showcase the Subject where the username and -group are extracted from the Organization (O) and Common Name (CN) field respectively.
