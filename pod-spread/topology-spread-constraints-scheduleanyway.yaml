@@ -1,0 +1,62 @@
+# helper pod that "blocks" a node
+apiVersion: v1
+kind: Pod
+metadata:
+  name: topology-spread-constraints-scheduleanyway-demo-helper
+  labels:
+    app: topology-spread-constraints-scheduleanyway-demo
+    app.kubernetes.io/component: node-blocker
+spec:
+  priorityClassName: system-cluster-critical # ensure this pod is scheduled
+  containers:
+  - image: nginx
+    name: nginx
+    ports:
+    - name: http
+      containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: topology-spread-constraints-scheduleanyway-demo
+  name: topology-spread-constraints-scheduleanyway-demo
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: topology-spread-constraints-scheduleanyway-demo
+      app.kubernetes.io/component: spread-constraints-demo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: spread-constraints-demo
+        app: topology-spread-constraints-scheduleanyway-demo
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - name: http
+          containerPort: 80
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: topology-spread-constraints-scheduleanyway-demo
+            app.kubernetes.io/component: spread-constraints-demo
+        topologyKey: kubernetes.io/hostname
+        maxSkew: 1
+        whenUnsatisfiable: ScheduleAnyway
+      # This affinity only shows what happens when one node is "blocked"
+      # i.e. the anti-affinity requires us to schedule to a node where the
+      # helper pod is not deployed to but our topologySpreadConstraints require
+      # us to not have a difference of more than one pods per node.
+      # The same behavior would apply if one node is full (resource-wise)
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: topology-spread-constraints-scheduleanyway-demo
+                app.kubernetes.io/component: node-blocker
+            topologyKey: kubernetes.io/hostname
