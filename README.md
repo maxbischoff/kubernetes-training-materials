@@ -81,7 +81,7 @@ The following table explains what is wrong with them and how to showcase the iss
 
 After finishing the demo, reset the state using `./troubleshooting/teardown.sh`.
 
-## Pod Spread Demo
+## Pod Affinity Demo
 
 This demo showcases the behavior of pods with pod anti-affinities.
 
@@ -103,6 +103,36 @@ This will show:
   preferred the pods being placed into different regions & zones
 * Two pods of the deployment `required-anti-affinity-demo` of which one is stuck in pending,
   since the required antiAffinity would require a node in a different region to exist
+
+## Pod Spread Demo
+
+This demo showcases scheduling behavior when using pod topology spread constraints. It assumes a two-node cluster.
+It is split into two parts, both using a `maxSkew` of `1` with different settings for `whenUnsatisfiable`.
+The demo for `DoNotSchedule` should be done first:
+
+1. Deploy the [donotschedule manifest](pod-spread/topology-spread-constraints-donotschedule.yaml) using
+   `kubectl apply -f pod-spread/topology-spread-constraints-donotschedule.yaml`
+1. Show that only one pod of the demo Deployment has been scheduled with the rest being stuck in `Pending` state using
+   `kubectl get pods -l app=topology-spread-constraints-donotschedule-demo -o wide`. 
+   The `-helper` pod has the purpose of blocking the whole node for the Deployment using an `podAntiAffinity`.
+1. Delete the helper pod using `kubectl delete pod topology-spread-constraints-donotschedule-demo-helper`.
+   This "frees" the node again for scheduling Pods of the demo Deployment
+1. Show that all Pods are now scheduled, and that they are evenly distributed amongst both nodes using
+   `kubectl get po -o wide`
+
+Afterwards you can contrast this with the behavior of the `ScheduleAnyway` setting:
+
+1. Show the difference between the first and second demo e.g. by using `colordiff -y pod-spread/*`.
+   The only difference between the demos are the names, the `app` labels (and selectors) and the `whenUnsatisfiable`
+   setting
+1. Deploy the demo using `kubectl apply -f pod-spread/topology-spread-constraints-scheduleanyway.yaml`
+1. Show that all pods are scheduled successfully, but on the same node (since the other one is blocked by the helper)
+   `kubectl get pods -l app=topology-spread-constraints-scheduleanyway-demo -o wide`
+1. Delete all demo pods and show that in the "good" case (where no node is blocked) pods are distributed equally between
+   nodes using `kubectl delete po topology-spread-constraints-scheduleanyway-demo-helper; kubectl delete pods -l app=topology-spread-constraints-scheduleanyway-demo`
+   and then `kubectl get pods -l app=topology-spread-constraints-scheduleanyway-demo -o wide`
+
+Clean up the demo by running `kubectl delete -f pod-spread`.
 
 ## Showing where the certificate authentication module extracts user-info from
 
