@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client
+  labels:
+    app: client
+spec:
+  containers:
+  - name: client
+    image: ubuntu
+    command:
+    - bash
+    - -c
+    - |
+      apt-get update
+      apt-get install -y curl dnsutils
+      sleep infinity
