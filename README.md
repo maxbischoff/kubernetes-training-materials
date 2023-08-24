@@ -134,6 +134,35 @@ Afterwards you can contrast this with the behavior of the `ScheduleAnyway` setti
 
 Clean up the demo by running `kubectl delete -f pod-spread`.
 
+## Pod Disruption Budget Demo
+
+This demo showcases how you can protect against having too many pods evicted at once during planned node maintenance
+by defining a PodDisruptionBudget (PDB) for your Pods. It assumes two-node cluster, since one node will be drained during the demo,
+and having too many nodes would spread the pods too far to show the effect of the PDB. Before the demo, setup the deployment and PDB:
+
+```sh
+kubectl apply -f pod-disruption-budgets/
+```
+
+After the pods of the deployment have been scheduled, pick a node with a few pods on them, that will be used for the "maintenance"
+e.g. by running `kubectl get pods -l app=pdb-demo -o wide` and looking at the Node column and insert it into `$NODE` in the demo.
+To then showcase the behavior of the PDB, set up a watch in one terminal using:
+
+```sh
+watch -n 0.1 kubectl get po-l app=pdb-demo
+```
+
+In a second terminal, cordon and drain the node using
+
+```sh
+kubectl cordon $NODE
+kubectl drain $NODE --ignore-daemonsets
+```
+
+Then jump back to the first terminal with the watch. You should observe, that only one pod is evicted at a time.
+In the second terminal you can see in the output of `kubectl drain`, that some errors appear indicating that the demo pods cannot be evicted due to the PDB.
+After finishing the demo, make sure to clean up by runnning `kubectl uncordon $NODE` and `kubectl delete -f pod-disruption-budgets/`.
+
 ## Showing where the certificate authentication module extracts user-info from
 
 (Only works when authenticating with a client-certificate)

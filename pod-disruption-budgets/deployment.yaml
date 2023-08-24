@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pdb-demo
+  name: pdb-demo
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: pdb-demo
+  template:
+    metadata:
+      labels:
+        app: pdb-demo
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - name: http
+          containerPort: 80
