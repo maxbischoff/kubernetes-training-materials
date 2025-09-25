@@ -1,7 +1,25 @@
 # Kubernetes Training Materials
 
-Demos für various topics of the LFD458 (Kubernetes for Administrators) and LFS459 (Kubernetes for Application Developers)
-courses by the Linux Foundation.
+Demos for various topics of the Kubernetes for Administrators and Kubernetes for Application Developers courses.
+
+## Showing how `kubectl apply` behaves
+
+This demo showcases why `kubectl` gives a warning when applying to objects that were created by other means:
+
+```
+Warning: resource deployments/apply-demo is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+```
+
+You first have to create the demo deployment using `kubectl create` and then change it multiple times with apply:
+
+1. Use `kubectl create -f apply-behavior/0_deploy.yaml` to create the initial deployment.
+1. (optional): Show the deployment in the cluster using `kubectl get deploy apply-demo -o yaml`
+1. Update the deployment using `kubectl apply -f apply-behavior/1_apply.yaml`
+1. Show the deployment in the cluster using `kubectl get deploy apply-demo -o yaml`. Highlight that the env `DEBUG` missing in the applied manifest is still in the deployment in the cluster.
+1. Update the deployment using `kubectl apply -f apply-behavior/2_apply_again.yaml`
+1. Show the deployment in the cluster using `kubectl get deploy apply-demo -o yaml`. Highlight that the env `DEBUG` has now the value that was specified in the 2_apply_again.yaml.
+1. Update the deployment using `kubectl apply -f apply-behavior/3_apply_a_last_time.yaml`
+1. Show the deployment in the cluster using `kubectl get deploy apply-demo -o yaml`. Highlight that the env `DEBUG` is now gone.
 
 ## Volumes Demo
 

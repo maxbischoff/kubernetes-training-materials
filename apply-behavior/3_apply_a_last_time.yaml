@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: apply-demo
+  name: apply-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apply-demo
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: apply-demo
+    spec:
+      containers:
+      - image: nginx
+        name: apply-demo
+        env:
+        - name: STAGE
+          value: dev
